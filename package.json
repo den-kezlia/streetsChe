@@ -1,0 +1,16 @@
+{
+  "name": "streetsche",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/parseStreets.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@googlemaps/google-maps-services-js": "^3.1.13",
+    "cheerio": "^1.0.0-rc.3",
+    "request-promise": "^4.2.6"
+  }
+}
