@@ -4,13 +4,14 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "start": "node src/parseStreets.js"
+    "parseStreets": "node src/parseStreets.js",
+    "createCards": "node src/createCards.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@googlemaps/google-maps-services-js": "^3.1.13",
     "cheerio": "^1.0.0-rc.3",
-    "request-promise": "^4.2.6"
+    "request-promise": "^4.2.6",
+    "trello": "^0.10.0"
   }
 }
