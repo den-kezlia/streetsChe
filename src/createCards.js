@@ -1,6 +1,6 @@
 const Trello = require('trello');
 const config = require('../config/trello.json');
-const streetsData = require('../data/streets_test.json');
+const streetsData = require('../data/streets.json');
 
 const trello = new Trello(config.key, config.token);
 
