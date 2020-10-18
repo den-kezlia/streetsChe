@@ -5,13 +5,15 @@
   "main": "src/index.js",
   "scripts": {
     "parseStreets": "node src/parseStreets.js",
-    "createCards": "node src/createCards.js"
+    "createCards": "node src/createCards.js",
+    "start": "node src/index.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "cheerio": "^1.0.0-rc.3",
     "request-promise": "^4.2.6",
+    "telebot": "^1.4.1",
     "trello": "^0.10.0"
   }
 }

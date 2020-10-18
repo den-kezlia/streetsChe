@@ -1,3 +1,4 @@
 .launch
 node_modules
 config/trello.json
+config/telegram.json
