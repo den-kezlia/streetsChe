@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "cheerio": "^1.0.0-rc.3",
+    "exif": "^0.6.0",
     "request-promise": "^4.2.6",
     "telebot": "^1.4.1",
     "trello": "^0.10.0"

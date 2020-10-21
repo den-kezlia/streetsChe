@@ -6,7 +6,9 @@ const trello = new Trello(config.key, config.token);
 
 streetsData.forEach(street => {
     const translatedStreetName = street.translate ? street.translate.split('.')[0] : street.title;
-    const description = `${translatedStreetName}|${street.firstBuilding}|${street.lastBuilding}`;
+    const firstBuilding = isNaN(street.firstBuilding) ? 1 :  street.firstBuilding;
+    const lastBuilding = street.lastBuilding;
+    const description = `${translatedStreetName}|${firstBuilding}|${lastBuilding}`;
 
     trello.addCard(street.title, description, config.streetsListID);
 });
