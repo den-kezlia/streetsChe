@@ -50,7 +50,16 @@ bot.on('/getRandomStreet', msg => {
         if (street) {
             trello.updateCardList(street.id, config.toRideListID);
             const message = `${street.name} - [link](${helper.getStreetMapLink(street.desc)})`;
-            const replyMarkup = bot.inlineKeyboard([[bot.inlineButton('Загрузить фото', {callback: JSON.stringify({cardID: street.id})})]]);
+            const replyMarkup = bot.inlineKeyboard([
+                [bot.inlineButton('Закрыть', {callback: JSON.stringify({
+                    type: 'finish',
+                    cardID: street.id
+                })}),
+                bot.inlineButton('Загрузить фото', {callback: JSON.stringify({
+                    type: 'uploadPhoto',
+                    cardID: street.id
+                })})]
+            ]);
 
             return bot.sendMessage(id, message, {replyMarkup});
         }
@@ -65,7 +74,20 @@ bot.on('callbackQuery', msg => {
     const id = msg.from.id;
     const replyOptions = helper.getReplyOptions(id, bot);
     const data = JSON.parse(msg.data);
-    const message = 'закгружай';
+    let message;
+
+    switch (data.type) {
+        case 'uploadPhoto':
+            message = 'закгружай';
+            break;
+        case 'finish':
+            message = 'Закрыто';
+            trello.updateCardList(data.cardID, config.completedListID);
+
+            break;
+        default:
+            break;
+    }
 
     if (data.cardID) {
         CARD_ID = data.cardID;
