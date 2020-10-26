@@ -1,14 +1,16 @@
 const Trello = require('trello');
+const TrelloNode = require('node-trello');
 const TeleBot = require('telebot');
 const http = require('https');
 const fs = require('fs');
-const exif = require('exif').ExifImage;
+const path = require('path');
 
 const config = require('../config/trello.json');
 const helper = require('./helper');
 const Buttons = helper.getBotButtons();
 
 const trello = new Trello(config.key, config.token);
+const trelloNode = new TrelloNode(config.key, config.token);
 const telegramToken = require('../config/telegram').token;
 
 const bot = new TeleBot({
@@ -74,35 +76,17 @@ bot.on('callbackQuery', msg => {
 
 bot.on('document', msg => {
     bot.getFile(msg.document.file_id).then(result => {
-        const fileName = `./media/${msg.document.file_name}`;
-        const file = fs.createWriteStream(fileName);
+        const imageName = path.resolve(__dirname, `../media/${msg.document.file_name}`);
+        const imageFile = fs.createWriteStream(imageName);
 
-        if (CARD_ID) {
-            trello.addAttachmentToCard(CARD_ID, result.fileLink);
-            CARD_ID = '';
-        }
-
-        console.log(result.fileLink);
-
-        http.get(result.fileLink, response => {
-            response.pipe(file);
-
-            try {
-                new exif({ image : fileName }, function (error, metaData) {
-                    if (error)
-                        console.log('Error: '+error.message);
-                    else {
-                        const url = helper.getPhotoMapLink(metaData.gps);
-
-                        console.log(metaData);
-                        console.log(url);
-                    }
-                });
-            } catch (error) {
-                console.log('Error: ' + error.message);
-            }
+        http.get(result.fileLink, data => {
+            const fileResponse = data.pipe(imageFile);
+            fileResponse.on('finish', () => {
+                if (CARD_ID) {
+                    helper.uploadImageToTrello(trelloNode, CARD_ID, imageName)
+                }
+            })
         });
-
     });
 })
 
