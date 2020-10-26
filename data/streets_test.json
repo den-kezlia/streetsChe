@@ -1,0 +1,31 @@
+[{
+    "title": "ул. Дачная",
+    "translate": "Дачна вул. Dachna str.",
+    "firstBuilding": "1",
+    "lastBuilding": "10",
+    "page": 8
+}, {
+    "title": "ул. Дашина",
+    "translate": "",
+    "firstBuilding": "12",
+    "lastBuilding": "12",
+    "page": 8
+}, {
+    "title": "ул. Декабристов",
+    "translate": "Декабристів вул. Dekabrystiv str.",
+    "firstBuilding": "Автостоянка",
+    "lastBuilding": "93",
+    "page": 8
+}, {
+    "title": "ул. Десняка",
+    "translate": "Десняка вул. Desniaka str.",
+    "firstBuilding": "1",
+    "lastBuilding": "64",
+    "page": 8
+}, {
+    "title": "ул. Деснянская",
+    "translate": "Деснянська вул. Desnians'ka str.",
+    "firstBuilding": "3А",
+    "lastBuilding": "6",
+    "page": 8
+}]

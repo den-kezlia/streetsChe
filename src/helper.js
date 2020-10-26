@@ -1,32 +1,43 @@
 const exif = require('exif').ExifImage;
 const fs = require('fs');
-
-const config = require('../config/trello.json');
 const URL = require('url');
+
+const config = require('../config/config.json');
 
 const getBotButtons = () => {
     return {
-        showAllStreets: {
-            label: 'Показать все улицы',
-            command: '/showAllStreets'
+        getAllStreets: {
+            label: 'Все улицы',
+            command: '/getAllStreets'
         },
         getRandomStreet: {
-            label: 'Выбрать любую улицу',
+            label: 'Выбрать случайную',
             command: '/getRandomStreet'
+        },
+        getToRideStreets: {
+            label: 'В процессе',
+            command: '/getToRideStreets'
+        },
+        getFinishedStreets: {
+            label: 'Завершенные',
+            command: '/getFinishedStreets'
         }
     }
 }
 
 const isAdmin = (id) => {
-    // TODO: Implement check if it's admin
-    return true;
+    return id === config.adminTelegramID
 }
 
 const getStartButtons = (id) => {
     let buttons = [];
+    const btnCollection = getBotButtons();
 
     if (isAdmin(id)) {
-        buttons.push([getBotButtons().showAllStreets.label, getBotButtons().getRandomStreet.label]);
+        buttons.push(
+            [btnCollection.getToRideStreets.label, btnCollection.getFinishedStreets.label],
+            [btnCollection.getAllStreets.label, btnCollection.getRandomStreet.label]
+        );
     }
 
     return buttons;
@@ -41,14 +52,28 @@ const getReplyOptions = (id, bot) => {
     }
 }
 
-const getAllStreets = async (trello) => {
-    const allStreets = trello.getCardsOnList(config.streetsListID);
+const getStreets = async (trello, type) => {
+    let listID;
 
-    return allStreets;
+    switch (type) {
+        case 'allStreets':
+            listID = config.allStreetsListID
+            break;
+        case 'toRide':
+            listID = config.toRideListID
+            break;
+        case 'finished':
+            listID = config.finishedListID
+            break;
+        default:
+            break;
+    }
+
+    return trello.getCardsOnList(listID);
 }
 
 const getRandomStreet = async (trello) => {
-    const street = trello.getCardsForList(config.streetsListID).then(streets => {
+    const street = trello.getCardsForList(config.allStreetsListID).then(streets => {
         const index = Math.floor(Math.random() * Math.floor(streets.length));
 
         return streets[index];
@@ -105,7 +130,7 @@ const getImageMeta = (imageName) => {
 module.exports = {
     getBotButtons: getBotButtons,
     getReplyOptions: getReplyOptions,
-    getAllStreets: getAllStreets,
+    getStreets: getStreets,
     getRandomStreet: getRandomStreet,
     getStreetMapLink: getStreetMapLink,
     getPhotoMapLink: getPhotoMapLink,

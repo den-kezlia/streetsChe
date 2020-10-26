@@ -1,8 +1,8 @@
 const Trello = require('trello');
-const config = require('../config/trello.json');
+const config = require('../config/config.json');
 const streetsData = require('../data/streets.json');
 
-const trello = new Trello(config.key, config.token);
+const trello = new Trello(config.trelloKey, config.trelloToken);
 
 streetsData.forEach(street => {
     const translatedStreetName = street.translate ? street.translate.split('.')[0] : street.title;
@@ -10,5 +10,5 @@ streetsData.forEach(street => {
     const lastBuilding = street.lastBuilding;
     const description = `${translatedStreetName}|${firstBuilding}|${lastBuilding}`;
 
-    trello.addCard(street.title, description, config.streetsListID);
+    trello.addCard(street.title, description, config.allStreetsListID);
 });

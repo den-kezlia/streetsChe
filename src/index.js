@@ -5,13 +5,13 @@ const http = require('https');
 const fs = require('fs');
 const path = require('path');
 
-const config = require('../config/trello.json');
+const config = require('../config/config.json');
 const helper = require('./helper');
 const Buttons = helper.getBotButtons();
 
-const trello = new Trello(config.key, config.token);
-const trelloNode = new TrelloNode(config.key, config.token);
-const telegramToken = require('../config/telegram').token;
+const trello = new Trello(config.trelloKey, config.trelloToken);
+const trelloNode = new TrelloNode(config.trelloKey, config.trelloToken);
+const telegramToken = config.telegramToken;
 
 const bot = new TeleBot({
     token: telegramToken,
@@ -30,14 +30,58 @@ bot.on(['/start'], msg => {
     return bot.sendMessage(id, 'Выберите одну из команд', replyOptions);
 });
 
-bot.on('/showAllStreets', msg => {
+bot.on('/getAllStreets', msg => {
     const id = msg.from.id;
     const replyOptions = helper.getReplyOptions(id, bot);
 
-    helper.getAllStreets(trello).then(allStreets => {
-        const message = allStreets.map(street => {
-            return `${street.name} - ${street.desc} - [link](${helper.getStreetMapLink(street.desc)})`
-        }).join('\n');
+    helper.getStreets(trello, 'allStreets').then(streets => {
+        let message;
+
+        if (streets && streets.length > 0) {
+            message = streets.map(street => {
+                return `${street.name} - ${street.desc} - ${helper.getStreetMapLink(street.desc)})`
+            }).join('\n');
+        } else {
+            message = 'Нет улиц'
+        }
+
+        return bot.sendMessage(id, message, replyOptions);
+    });
+});
+
+bot.on('/getToRideStreets', msg => {
+    const id = msg.from.id;
+    const replyOptions = helper.getReplyOptions(id, bot);
+
+    helper.getStreets(trello, 'toRide').then(streets => {
+        let message;
+
+        if (streets && streets.length > 0) {
+            message = streets.map(street => {
+                return `${street.name} - ${street.desc} - ${helper.getStreetMapLink(street.desc)}`
+            }).join('\n');
+        } else {
+            message = 'Нет улиц'
+        }
+
+        return bot.sendMessage(id, message, replyOptions);
+    });
+});
+
+bot.on('/getFinishedStreets', msg => {
+    const id = msg.from.id;
+    const replyOptions = helper.getReplyOptions(id, bot);
+
+    helper.getStreets(trello, 'finished').then(streets => {
+        let message;
+
+        if (streets && streets.length > 0) {
+            message = streets.map(street => {
+                return `${street.name} - ${street.desc} - ${helper.getStreetMapLink(street.desc)}`
+            }).join('\n');
+        } else {
+            message = 'Нет улиц'
+        }
 
         return bot.sendMessage(id, message, replyOptions);
     });
@@ -49,10 +93,14 @@ bot.on('/getRandomStreet', msg => {
     helper.getRandomStreet(trello).then(street => {
         if (street) {
             trello.updateCardList(street.id, config.toRideListID);
-            const message = `${street.name} - [link](${helper.getStreetMapLink(street.desc)})`;
+            const message = `${street.name} - ${helper.getStreetMapLink(street.desc)}`;
             const replyMarkup = bot.inlineKeyboard([
-                [bot.inlineButton('Закрыть', {callback: JSON.stringify({
+                [bot.inlineButton('Завершить', {callback: JSON.stringify({
                     type: 'finish',
+                    cardID: street.id
+                })}),
+                bot.inlineButton('Отменить', {callback: JSON.stringify({
+                    type: 'cancel',
                     cardID: street.id
                 })}),
                 bot.inlineButton('Загрузить фото', {callback: JSON.stringify({
@@ -78,12 +126,15 @@ bot.on('callbackQuery', msg => {
 
     switch (data.type) {
         case 'uploadPhoto':
-            message = 'закгружай';
+            message = 'Загружай';
             break;
         case 'finish':
-            message = 'Закрыто';
-            trello.updateCardList(data.cardID, config.completedListID);
-
+            trello.updateCardList(data.cardID, config.finishedListID);
+            message = 'Завершено';
+            break;
+        case 'cancel':
+            trello.updateCardList(data.cardID, config.allStreetsListID);
+            message = 'Отменено';
             break;
         default:
             break;
