@@ -1,5 +1,4 @@
 .vscode
 node_modules
-config/trello.json
-config/telegram.json
+config/config.jsonn
 media
