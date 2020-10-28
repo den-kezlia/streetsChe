@@ -13,6 +13,26 @@ const trello = new Trello(config.trelloKey, config.trelloToken);
 const trelloNode = new TrelloNode(config.trelloKey, config.trelloToken);
 const telegramToken = config.telegramToken;
 
+const sendStreetMessage = (bot, id, street) => {
+    const message = `${street.name} - ${helper.getStreetMapLink(street.desc)}`;
+    const replyMarkup = bot.inlineKeyboard([
+        [bot.inlineButton('Завершить', {callback: JSON.stringify({
+            type: 'finish',
+            cardID: street.id
+        })}),
+        bot.inlineButton('Отменить', {callback: JSON.stringify({
+            type: 'cancel',
+            cardID: street.id
+        })}),
+        bot.inlineButton('Загрузить фото', {callback: JSON.stringify({
+            type: 'uploadPhoto',
+            cardID: street.id
+        })})]
+    ]);
+
+    bot.sendMessage(id, message, {replyMarkup});
+}
+
 const bot = new TeleBot({
     token: telegramToken,
     usePlugins: ['namedButtons'],
@@ -54,17 +74,13 @@ bot.on('/getToRideStreets', msg => {
     const replyOptions = helper.getReplyOptions(id, bot);
 
     helper.getStreets(trello, 'toRide').then(streets => {
-        let message;
-
         if (streets && streets.length > 0) {
-            message = streets.map(street => {
-                return `${street.name} - ${street.desc} - ${helper.getStreetMapLink(street.desc)}`
-            }).join('\n');
+            streets.forEach(street => {
+                sendStreetMessage(bot, id, street);
+            });
         } else {
-            message = 'Нет улиц'
+            bot.sendMessage(id, 'Нет Улиц', replyOptions);
         }
-
-        return bot.sendMessage(id, message, replyOptions);
     });
 });
 
@@ -93,23 +109,7 @@ bot.on('/getRandomStreet', msg => {
     helper.getRandomStreet(trello).then(street => {
         if (street) {
             trello.updateCardList(street.id, config.toRideListID);
-            const message = `${street.name} - ${helper.getStreetMapLink(street.desc)}`;
-            const replyMarkup = bot.inlineKeyboard([
-                [bot.inlineButton('Завершить', {callback: JSON.stringify({
-                    type: 'finish',
-                    cardID: street.id
-                })}),
-                bot.inlineButton('Отменить', {callback: JSON.stringify({
-                    type: 'cancel',
-                    cardID: street.id
-                })}),
-                bot.inlineButton('Загрузить фото', {callback: JSON.stringify({
-                    type: 'uploadPhoto',
-                    cardID: street.id
-                })})]
-            ]);
-
-            return bot.sendMessage(id, message, {replyMarkup});
+            sendStreetMessage(bot, id, street);
         }
     }).catch(error => {
         console.log(error);
