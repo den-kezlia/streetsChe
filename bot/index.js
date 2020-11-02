@@ -24,7 +24,7 @@ const sendStreetMessage = (bot, id, street) => {
             type: 'cancel',
             cardID: street.id
         })}),
-        bot.inlineButton('Загрузить фото', {callback: JSON.stringify({
+        bot.inlineButton('Фото', {callback: JSON.stringify({
             type: 'uploadPhoto',
             cardID: street.id
         })})]
