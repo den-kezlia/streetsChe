@@ -1,4 +1,3 @@
-const exif = require('exif').ExifImage;
 const fs = require('fs');
 const URL = require('url');
 
@@ -110,23 +109,6 @@ const uploadImageToTrello = (trelloNode, CARD_ID, imageName) => {
     })
 }
 
-const getImageMeta = (imageName) => {
-    try {
-        new exif({ image : imageName }, function (error, metaData) {
-            if (error)
-                console.log('Error: '+error.message);
-            else {
-                const url = helper.getPhotoMapLink(metaData.gps);
-
-                console.log(metaData);
-                console.log(url);
-            }
-        });
-    } catch (error) {
-        console.log('Error: ' + error.message);
-    }
-}
-
 module.exports = {
     getBotButtons: getBotButtons,
     getReplyOptions: getReplyOptions,
@@ -134,6 +116,5 @@ module.exports = {
     getRandomStreet: getRandomStreet,
     getStreetMapLink: getStreetMapLink,
     getPhotoMapLink: getPhotoMapLink,
-    uploadImageToTrello: uploadImageToTrello,
-    getImageMeta: getImageMeta
+    uploadImageToTrello: uploadImageToTrello
 }
