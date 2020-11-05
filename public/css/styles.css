@@ -1,0 +1,19 @@
+html, body {
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+}
+
+.map {
+    width: 100%;
+    height: 100%;
+}
+
+.popup-image {
+    width: 300px;
+    height: auto;
+}

@@ -3,6 +3,7 @@ const path = require('path');
 const http = require('https');
 const exif = require('exif').ExifImage;
 const NodeTrello = require('node-trello');
+const gpsConvert = require('geo-coordinates-parser');
 const config = require('../config/config.json');
 const { log } = require('console');
 
@@ -15,7 +16,13 @@ const getImageGPS = (imagePath) => {
                 if (error) {
                     resolve(null)
                 } else {
-                    resolve(metaData.gps)
+                    const gps = metaData.gps;
+                    const gpsConverted = gpsConvert(`${gps.GPSLatitude[0]}° ${gps.GPSLatitude[1]}'${gps.GPSLatitude[2]}"${gps.GPSLatitudeRef},  ${gps.GPSLongitude[0]}° ${gps.GPSLongitude[1]}'${gps.GPSLongitude[2]}"${gps.GPSLongitudeRef}`);
+
+                    resolve({
+                        lat: gpsConverted.decimalLatitude,
+                        lng: gpsConverted.decimalLongitude
+                    })
                 }
             });
         } catch (error) {
