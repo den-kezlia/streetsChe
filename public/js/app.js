@@ -1,11 +1,3 @@
-const parseImages = () => {
-    const images = IMAGES;
-
-    images.forEach(image => {
-        console.log(image);
-    });
-}
-
 const initMap = () => {
     mapboxgl.accessToken = 'pk.eyJ1IjoiZGVua2V6bGlhIiwiYSI6ImNrZndmNHVrdDFrdzIycXBkYTN0b3IybzEifQ.jdA9gXZL-JLS6c8yS4ecng';
     const map = new mapboxgl.Map({
@@ -30,5 +22,4 @@ const initMap = () => {
     });
 }
 
-parseImages();
 initMap();
