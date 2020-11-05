@@ -2,7 +2,7 @@ const parseImages = () => {
     const images = IMAGES;
 
     images.forEach(image => {
-        console.log(image.GPS);
+        console.log(image);
     });
 }
 
@@ -17,7 +17,7 @@ const initMap = () => {
 
     IMAGES.forEach(image => {
         if (image.GPS) {
-            const imageHtml = `<img src="${image.url}" width="300" height="225" class="popup-image" />`;
+            const imageHtml = `<h2 class="popup-title">${image.cardName}</h2><img src="${image.previewSmall}" width="300" height="225" class="popup-image" />`;
             const popup = new mapboxgl.Popup();
             const marker = new mapboxgl.Marker();
 

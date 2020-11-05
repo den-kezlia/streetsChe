@@ -17,3 +17,8 @@ body {
     width: 300px;
     height: auto;
 }
+
+.popup-title {
+    margin-top: 0;
+    margin-bottom: 10px;
+}

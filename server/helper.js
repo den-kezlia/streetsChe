@@ -76,7 +76,10 @@ const getCardImages = (cards) => {
                 return {
                     localPath: localPath,
                     url: image.url,
-                    GPS: gps
+                    GPS: gps,
+                    cardName: image.cardName,
+                    previewSmall: image.previews[3].url,
+                    previewLarge: image.previews[6].url
                 };
             })
         });
@@ -91,6 +94,12 @@ const getCardAttachments = (card) => {
             if (error) {
                 reject(error)
             }
+
+            attachments.map(attach => {
+                attach.cardName = card.name;
+
+                return attach
+            })
 
             resolve(attachments);
         })
