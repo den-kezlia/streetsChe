@@ -7,10 +7,6 @@ const config = require('../config/config.json');
 const trello = new Trello(config.trelloKey, config.trelloToken);
 const trelloNode = new TrelloNode(config.trelloKey, config.trelloToken);
 
-const ALL_STREETS = 'allStreets';
-const TO_RIDE = 'toRide';
-const FINISHED = 'finished';
-
 const getBotButtons = () => {
     return {
         getRandomStreet: {
@@ -31,13 +27,11 @@ const isAdmin = (id) => {
 const getStartButtons = (id) => {
     let buttons = [];
     const btnCollection = getBotButtons();
-    const streetsCount = getListCardsCount(ALL_STREETS);
-    const finishedStreetsCount = getListCardsCount(FINISHED);
 
     if (isAdmin(id)) {
         buttons.push(
             [
-                `${btnCollection.getToRideStreets.label} (${streetsCount}/${finishedStreetsCount})`,
+                btnCollection.getToRideStreets.label,
                 btnCollection.getRandomStreet.label
             ]
         );
@@ -55,17 +49,17 @@ const getReplyOptions = (id, bot) => {
     }
 }
 
-const getStreets = async (type) => {
+const getStreets = (type) => {
     let listID;
 
     switch (type) {
-        case ALL_STREETS:
+        case config.ALL_STREETS:
             listID = config.allStreetsListID
             break;
-        case TO_RIDE:
+        case config.TO_RIDE:
             listID = config.toRideListID
             break;
-        case FINISHED:
+        case config.FINISHED:
             listID = config.finishedListID
             break;
         default:
@@ -75,7 +69,7 @@ const getStreets = async (type) => {
     return trello.getCardsOnList(listID);
 }
 
-const getRandomStreet = async () => {
+const getRandomStreet = () => {
     const street = trello.getCardsForList(config.allStreetsListID).then(streets => {
         const index = Math.floor(Math.random() * Math.floor(streets.length));
 
@@ -112,24 +106,26 @@ const uploadImageToTrello = (CARD_ID, imageName) => {
     })
 }
 
-const getListCardsCount = (type) => {
+const getListCardsCount = async (type) => {
     let listID;
 
     switch (type) {
-        case ALL_STREETS:
+        case config.ALL_STREETS:
             listID = config.allStreetsListID
             break;
-        case TO_RIDE:
+        case config.TO_RIDE:
             listID = config.toRideListID
             break;
-        case FINISHED:
+        case config.FINISHED:
             listID = config.finishedListID
             break;
         default:
             break;
     }
 
-    return trello.getCardsOnList(listID).length;
+    return trello.getCardsOnList(listID).then(cards => {
+        return cards.length;
+    });
 }
 
 const updateCardList = (cardID, listID) => {

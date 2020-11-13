@@ -50,7 +50,7 @@ bot.on('/getToRideStreets', msg => {
     const id = msg.from.id;
     const replyOptions = helper.getReplyOptions(id, bot);
 
-    helper.getStreets('toRide').then(streets => {
+    helper.getStreets(config.TO_RIDE).then(streets => {
         if (streets && streets.length > 0) {
             streets.forEach(street => {
                 sendStreetMessage(bot, id, street);
