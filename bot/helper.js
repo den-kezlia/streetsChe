@@ -105,7 +105,6 @@ const uploadImageToTrello = (trelloNode, CARD_ID, imageName) => {
     const image = fs.createReadStream(imageName);
     trelloNode.post(`/1/cards/${CARD_ID}/attachments`, { attachment: image }, (err, attachments) => {
         if (err) throw err;
-        console.log(attachments);
     })
 }
 
