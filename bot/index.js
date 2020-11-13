@@ -50,25 +50,6 @@ bot.on(['/start'], msg => {
     return bot.sendMessage(id, 'Выберите одну из команд', replyOptions);
 });
 
-bot.on('/getAllStreets', msg => {
-    const id = msg.from.id;
-    const replyOptions = helper.getReplyOptions(id, bot);
-
-    helper.getStreets(trello, 'allStreets').then(streets => {
-        let message;
-
-        if (streets && streets.length > 0) {
-            message = streets.map(street => {
-                return `${street.name} - ${street.desc} - ${helper.getStreetMapLink(street.desc)})`
-            }).join('\n');
-        } else {
-            message = 'Нет улиц'
-        }
-
-        return bot.sendMessage(id, message, replyOptions);
-    });
-});
-
 bot.on('/getToRideStreets', msg => {
     const id = msg.from.id;
     const replyOptions = helper.getReplyOptions(id, bot);
@@ -81,25 +62,6 @@ bot.on('/getToRideStreets', msg => {
         } else {
             bot.sendMessage(id, 'Нет Улиц', replyOptions);
         }
-    });
-});
-
-bot.on('/getFinishedStreets', msg => {
-    const id = msg.from.id;
-    const replyOptions = helper.getReplyOptions(id, bot);
-
-    helper.getStreets(trello, 'finished').then(streets => {
-        let message;
-
-        if (streets && streets.length > 0) {
-            message = streets.map(street => {
-                return `${street.name} - ${street.desc} - ${helper.getStreetMapLink(street.desc)}`
-            }).join('\n');
-        } else {
-            message = 'Нет улиц'
-        }
-
-        return bot.sendMessage(id, message, replyOptions);
     });
 });
 
