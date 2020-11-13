@@ -5,10 +5,6 @@ const config = require('../config/config.json');
 
 const getBotButtons = () => {
     return {
-        getAllStreets: {
-            label: 'Все улицы',
-            command: '/getAllStreets'
-        },
         getRandomStreet: {
             label: 'Выбрать случайную',
             command: '/getRandomStreet'
@@ -16,10 +12,6 @@ const getBotButtons = () => {
         getToRideStreets: {
             label: 'В процессе',
             command: '/getToRideStreets'
-        },
-        getFinishedStreets: {
-            label: 'Завершенные',
-            command: '/getFinishedStreets'
         }
     }
 }
@@ -35,7 +27,7 @@ const getStartButtons = (id) => {
     if (isAdmin(id)) {
         buttons.push(
             [btnCollection.getToRideStreets.label, btnCollection.getFinishedStreets.label],
-            [btnCollection.getAllStreets.label, btnCollection.getRandomStreet.label]
+            [btnCollection.getRandomStreet.label]
         );
     }
 
