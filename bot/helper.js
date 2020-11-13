@@ -1,7 +1,15 @@
 const fs = require('fs');
 const URL = require('url');
-
+const Trello = require('trello');
+const TrelloNode = require('node-trello');
 const config = require('../config/config.json');
+
+const trello = new Trello(config.trelloKey, config.trelloToken);
+const trelloNode = new TrelloNode(config.trelloKey, config.trelloToken);
+
+const ALL_STREETS = 'allStreets';
+const TO_RIDE = 'toRide';
+const FINISHED = 'finished';
 
 const getBotButtons = () => {
     return {
@@ -23,11 +31,15 @@ const isAdmin = (id) => {
 const getStartButtons = (id) => {
     let buttons = [];
     const btnCollection = getBotButtons();
+    const streetsCount = getListCardsCount(ALL_STREETS);
+    const finishedStreetsCount = getListCardsCount(FINISHED);
 
     if (isAdmin(id)) {
         buttons.push(
-            [btnCollection.getToRideStreets.label, btnCollection.getFinishedStreets.label],
-            [btnCollection.getRandomStreet.label]
+            [
+                `${btnCollection.getToRideStreets.label} (${streetsCount}/${finishedStreetsCount})`,
+                btnCollection.getRandomStreet.label
+            ]
         );
     }
 
@@ -43,17 +55,17 @@ const getReplyOptions = (id, bot) => {
     }
 }
 
-const getStreets = async (trello, type) => {
+const getStreets = async (type) => {
     let listID;
 
     switch (type) {
-        case 'allStreets':
+        case ALL_STREETS:
             listID = config.allStreetsListID
             break;
-        case 'toRide':
+        case TO_RIDE:
             listID = config.toRideListID
             break;
-        case 'finished':
+        case FINISHED:
             listID = config.finishedListID
             break;
         default:
@@ -63,7 +75,7 @@ const getStreets = async (trello, type) => {
     return trello.getCardsOnList(listID);
 }
 
-const getRandomStreet = async (trello) => {
+const getRandomStreet = async () => {
     const street = trello.getCardsForList(config.allStreetsListID).then(streets => {
         const index = Math.floor(Math.random() * Math.floor(streets.length));
 
@@ -93,11 +105,35 @@ const getPhotoMapLink = (gps) => {
     return url.href;
 }
 
-const uploadImageToTrello = (trelloNode, CARD_ID, imageName) => {
+const uploadImageToTrello = (CARD_ID, imageName) => {
     const image = fs.createReadStream(imageName);
     trelloNode.post(`/1/cards/${CARD_ID}/attachments`, { attachment: image }, (err, attachments) => {
         if (err) throw err;
     })
+}
+
+const getListCardsCount = (type) => {
+    let listID;
+
+    switch (type) {
+        case ALL_STREETS:
+            listID = config.allStreetsListID
+            break;
+        case TO_RIDE:
+            listID = config.toRideListID
+            break;
+        case FINISHED:
+            listID = config.finishedListID
+            break;
+        default:
+            break;
+    }
+
+    return trello.getCardsOnList(listID).length;
+}
+
+const updateCardList = (cardID, listID) => {
+    trello.updateCardList(cardID, listID);
 }
 
 module.exports = {
@@ -107,5 +143,7 @@ module.exports = {
     getRandomStreet: getRandomStreet,
     getStreetMapLink: getStreetMapLink,
     getPhotoMapLink: getPhotoMapLink,
-    uploadImageToTrello: uploadImageToTrello
+    uploadImageToTrello: uploadImageToTrello,
+    getListCardsCount: getListCardsCount,
+    updateCardList: updateCardList
 }

@@ -1,5 +1,3 @@
-const Trello = require('trello');
-const TrelloNode = require('node-trello');
 const TeleBot = require('telebot');
 const http = require('https');
 const fs = require('fs');
@@ -9,8 +7,6 @@ const config = require('../config/config.json');
 const helper = require('./helper');
 const Buttons = helper.getBotButtons();
 
-const trello = new Trello(config.trelloKey, config.trelloToken);
-const trelloNode = new TrelloNode(config.trelloKey, config.trelloToken);
 const telegramToken = config.telegramToken;
 
 const sendStreetMessage = (bot, id, street) => {
@@ -54,7 +50,7 @@ bot.on('/getToRideStreets', msg => {
     const id = msg.from.id;
     const replyOptions = helper.getReplyOptions(id, bot);
 
-    helper.getStreets(trello, 'toRide').then(streets => {
+    helper.getStreets('toRide').then(streets => {
         if (streets && streets.length > 0) {
             streets.forEach(street => {
                 sendStreetMessage(bot, id, street);
@@ -68,9 +64,9 @@ bot.on('/getToRideStreets', msg => {
 bot.on('/getRandomStreet', msg => {
     const id = msg.from.id;
 
-    helper.getRandomStreet(trello).then(street => {
+    helper.getRandomStreet().then(street => {
         if (street) {
-            trello.updateCardList(street.id, config.toRideListID);
+            helper.updateCardList(street.id, config.toRideListID);
             sendStreetMessage(bot, id, street);
         }
     }).catch(error => {
@@ -91,11 +87,11 @@ bot.on('callbackQuery', msg => {
             message = 'Загружай';
             break;
         case 'finish':
-            trello.updateCardList(data.cardID, config.finishedListID);
+            helper.updateCardList(data.cardID, config.finishedListID);
             message = 'Завершено';
             break;
         case 'cancel':
-            trello.updateCardList(data.cardID, config.allStreetsListID);
+            helper.updateCardList(data.cardID, config.allStreetsListID);
             message = 'Отменено';
             break;
         default:
@@ -118,7 +114,7 @@ bot.on('document', msg => {
             const fileResponse = data.pipe(imageFile);
             fileResponse.on('finish', () => {
                 if (CARD_ID) {
-                    helper.uploadImageToTrello(trelloNode, CARD_ID, imageName)
+                    helper.uploadImageToTrello(CARD_ID, imageName)
                 }
             })
         });
